@@ -2,6 +2,9 @@
 
 #include <string>
 
+#define SUCCESS_OBJ_NAME_SYMBOLS \
+"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdifghijclmnopqrstuvwxyz_1234567890"
+
 class Common {
 public:
 /**

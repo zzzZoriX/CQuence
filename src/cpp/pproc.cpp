@@ -14,7 +14,7 @@ pre_processing(const std::string& ifn){
             -2
         ));
 
-    char c = 0, last = 0;
+    char c;
     std::string buffer = "";
     while(!ifp.eof()){
         ifp >> c;
@@ -26,6 +26,9 @@ pre_processing(const std::string& ifn){
 
     do {
         res.append(buffer.begin() + last_pos, buffer.begin() + pos);
+        
+        std::string directive = "#";
+        size_t end_dir = buffer.find_first_not_of(SUCCESS_OBJ_NAME_SYMBOLS, pos);
 
     } while((pos = buffer.find("#", last_pos) != std::string::npos));
 
