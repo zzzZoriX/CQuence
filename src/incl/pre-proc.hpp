@@ -1,0 +1,12 @@
+#pragma once
+
+#include <iostream>
+#include <fstream>
+#include <string>
+#include "ehandler.hpp"
+
+const std::string
+pre_processing(const std::string&);
+
+std::string
+incl_pp(const std::string&);
