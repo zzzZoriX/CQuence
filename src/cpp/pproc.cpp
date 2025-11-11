@@ -35,7 +35,7 @@ pre_processing(const std::string& ifn){
             size_t end_dir = buffer.find_first_not_of(SUCCESS_OBJ_NAME_SYMBOLS, pos + 1) + 1;
             std::string directive = buffer.substr(pos, end_dir);
 
-            res.append(process_directive(directive, buffer, &pos));
+            res.append(process_directive(directive, buffer, &pos, "", ifn));
             
             last_pos = pos;
 
@@ -63,7 +63,7 @@ pre_processing(const std::string& ifn){
 }
 
 std::string
-process_directive(const std::string& d, const std::string& buffer, size_t* off){
+process_directive(const std::string& d, const std::string& buffer, size_t* off, const std::string& from, const std::string& cur){
     if(d == "#include"){
         size_t 
             start_name = buffer.find('"', *off) + 1,
@@ -71,17 +71,24 @@ process_directive(const std::string& d, const std::string& buffer, size_t* off){
         ;
 
         *off = end_name;
-        
         std::string fn = buffer.substr(start_name, end_name - start_name - 1);
+        if(fn == from || fn == cur)
+            ErrorHandler::Abort(Error(
+                "Recursive include directive",
+                d + " <" + fn + ">",
+                0,
+                11,
+                1
+            ));
 
-        return ppd_include(fn);
+        return ppd_include(fn, cur);
     }
 
     return "";
 }
 
 std::string
-ppd_include(const std::string& infn){
+ppd_include(const std::string& infn, const std::string& from){
     std::ifstream iifp(infn);
     if(!iifp.is_open())
         ErrorHandler::Abort(Error(
@@ -104,7 +111,7 @@ ppd_include(const std::string& infn){
 
 
     std::string res;
-    size_t pos, last_pos = 0;
+    size_t pos = 0, last_pos = 0;
 
     if(buffer.find('#', last_pos) != std::string::npos)
         do {
@@ -113,7 +120,7 @@ ppd_include(const std::string& infn){
             size_t end_dir = buffer.find_first_not_of(SUCCESS_OBJ_NAME_SYMBOLS, pos + 1) + 1;
             std::string directive = buffer.substr(pos, end_dir);
 
-            res.append(process_directive(directive, buffer, &pos));
+            res.append(process_directive(directive, buffer, &pos, from, infn));
             
             last_pos = pos;
 
