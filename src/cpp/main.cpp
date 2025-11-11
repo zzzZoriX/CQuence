@@ -15,12 +15,14 @@ main(int c, char** v){
     const std::vector<std::string> ccpv = parse_call_command(*scc);
 
 #if CQ_CCP_DEBUG_CYCLE
+    std::cout << ccpv.size() << std::endl;
+
     for(const auto& c : ccpv)
-        std::cout << c.second;
+        std::cout << c << std::endl;
 #endif
 
     for(const auto& file : ccpv){
-        pre_processing(file);
+        const std::string tfn = pre_processing(file); // make a pre-processor file
     }
 
     delete scc;

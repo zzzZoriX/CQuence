@@ -5,6 +5,9 @@
 #define SUCCESS_OBJ_NAME_SYMBOLS \
 "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdifghijclmnopqrstuvwxyz_1234567890"
 
+#define SUCCESS_FILE_NAME_SYMBOLS \
+"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijclmnopqrstuvwxyz_1234567890-./"
+
 class Common {
 public:
 /**
