@@ -59,6 +59,9 @@ enum class LexemeType {
     LEX_NOT,
     LEX_AND,
     LEX_OR,
+    LEX_BIT_AND,
+    LEX_BIT_OR,
+    LEX_BIT_XOR,
 
     LEX_INC,
     LEX_DEC,
@@ -82,7 +85,8 @@ enum class LexemeType {
     LEX_STRING,
     LEX_END,
 
-    LEX_UNDEF = -1
+    LEX_UNDEF = -1,
+    LEX_CHANGE_LAST_TOK = -2
 };
 
 class Lexer {
@@ -91,6 +95,20 @@ private:
 
     const LexemeType
     _define_lexeme(const std::string&, std::pair<std::string, LexemeType>*);
+
+    const bool
+    _is_data_lex(const LexemeType lt){
+        return
+            lt == LexemeType::LEX_INT ||
+            lt == LexemeType::LEX_CHAR ||
+            lt == LexemeType::LEX_FLOAT ||
+            lt == LexemeType::LEX_DOUBLE_TYPE ||
+            lt == LexemeType::LEX_SHORT ||
+            lt == LexemeType::LEX_LONG ||
+            lt == LexemeType::LEX_LONG_LONG_TYPE ||
+            lt == LexemeType::LEX_PTR_TYPE
+        ;
+    }
 
 public:
     Lexer(const std::string& ifn) noexcept {
