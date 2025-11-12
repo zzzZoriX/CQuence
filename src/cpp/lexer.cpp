@@ -84,6 +84,7 @@ Lexer::_define_lexeme(
     if(word == "else")              return LexemeType::LEX_ELSE;
     if(word == "for")               return LexemeType::LEX_FOR;
     if(word == "while")             return LexemeType::LEX_WHILE;
+    if(word == "return")            return LexemeType::LEX_RETURN;
 
     if(word == "void")              return LexemeType::LEX_VOID_TYPE;
     if(word == "int")               return LexemeType::LEX_INT;
@@ -123,4 +124,64 @@ Lexer::_define_lexeme(
     if(Common::is_valid_obj_name(word)) return LexemeType::LEX_OBJ_NAME;
 
     return Lexer_ns::LexemeType::LEX_UNDEF;
+}
+
+const std::list<std::pair<std::string, LexemeType>>
+Lexer::Tokenize(void) noexcept {
+    std::list<std::pair<std::string, LexemeType>> tokens;
+    std::pair<std::string, LexemeType>* last_token = nullptr;
+    std::string word;
+    char c;
+
+    while((c = ifp.get()) != ifp.eof()){
+        if(Common::isspec(c) || c == ' '){
+            LexemeType lt = _define_lexeme(word, last_token);
+
+            // заменить "" на строку кода
+            if(lt == LexemeType::LEX_UNDEF)
+                ErrorHandler::Abort(Error(
+                    "Unknown word",
+                    "",
+                    0,
+                    0,
+                    -1
+                ));
+
+            if(lt != LexemeType::LEX_CHANGE_LAST_TOK){
+                std::pair<std::string, LexemeType> token(word, lt);
+
+                tokens.push_back(token);
+                last_token = &token;
+            }
+
+            word = {c, '\0'};
+            lt = _define_lexeme(word, last_token);
+
+            // заменить "" на строку кода
+            if(lt == LexemeType::LEX_UNDEF)
+                ErrorHandler::Abort(Error(
+                    "Unknown word",
+                    "",
+                    0,
+                    0,
+                    -1
+                ));
+
+            if(lt != LexemeType::LEX_CHANGE_LAST_TOK){
+                std::pair<std::string, LexemeType> token(word, lt);
+
+                tokens.push_back(token);
+                last_token = &token;
+            }
+
+            word.clear();
+            continue;
+        }
+        word += c;
+    }
+
+    tokens.push_back(std::pair<std::string, LexemeType>("", LexemeType::LEX_END));
+    last_token = nullptr;
+
+    return tokens;
 }

@@ -49,4 +49,29 @@ is_valid_obj_name(const std::string& s){
     
     return true;
 }
+
+static bool
+isspec(const char c){
+    return
+        c == ';' ||
+        c == '(' ||
+        c == ')' ||
+        c == '{' ||
+        c == '}' ||
+        c == '[' ||
+        c == ']' ||
+        c == '!' ||
+        c == '>' ||
+        c == '<' ||
+        c == '=' ||
+        c == ',' ||
+        c == '&' ||
+        c == '|' ||
+        c == '^' ||
+        c == '+' ||
+        c == '-' ||
+        c == '*' ||
+        c == '/'
+    ;
+}
 };

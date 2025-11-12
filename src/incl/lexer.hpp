@@ -16,6 +16,7 @@ enum class LexemeType {
     LEX_ELSE,
     LEX_FOR,
     LEX_WHILE,
+    LEX_RETURN,
 
     LEX_PTR_TYPE,
     LEX_VOID_TYPE,
