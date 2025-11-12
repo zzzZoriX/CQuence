@@ -6,6 +6,9 @@
 #include "ehandler.hpp"
 #include "common.hpp"
 
+enum class LexemeType;
+using Token = std::list<std::pair<std::string, LexemeType>>;
+
 namespace Lexer_ns {
 
 enum class LexemeType {
@@ -125,7 +128,11 @@ public:
             ));
     }
 
-    const std::list<std::pair<std::string, LexemeType>>
+    ~Lexer(){
+        ifp.close();
+    }
+
+    const Token
     Tokenize(void) noexcept;
 };
 };

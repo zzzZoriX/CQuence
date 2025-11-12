@@ -126,9 +126,9 @@ Lexer::_define_lexeme(
     return Lexer_ns::LexemeType::LEX_UNDEF;
 }
 
-const std::list<std::pair<std::string, LexemeType>>
+const Token
 Lexer::Tokenize(void) noexcept {
-    std::list<std::pair<std::string, LexemeType>> tokens;
+    Token tokens;
     std::pair<std::string, LexemeType>* last_token = nullptr;
     std::string word;
     char c;
