@@ -125,6 +125,6 @@ public:
     }
 
     const std::list<std::pair<std::string, LexemeType>>
-    Tokinize(void) noexcept;
+    Tokenize(void) noexcept;
 };
 };

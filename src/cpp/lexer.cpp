@@ -59,6 +59,21 @@ Lexer::_define_lexeme(
             last_tok->first += word;
             last_tok->second = LexemeType::LEX_PTR_TYPE;
         }
+        else if(Common::isdigits(word) && last_tok->second == LexemeType::LEX_MINUS){
+            last_tok->first += word;
+            last_tok->second = LexemeType::LEX_DIGIT;
+        }
+        else if(word == "_" && last_tok->second == LexemeType::LEX_OBJ_NAME)
+            last_tok->first += word;
+
+        else if(
+            Common::isdigits(word) && 
+            (
+                last_tok->second == LexemeType::LEX_OBJ_NAME ||
+                last_tok->second == LexemeType::LEX_DIGIT
+            )
+        )
+            last_tok->first += word;
 
         return LexemeType::LEX_CHANGE_LAST_TOK;
     }
