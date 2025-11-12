@@ -104,5 +104,8 @@ Lexer::_define_lexeme(
     if(word == "}")                 return LexemeType::LEX_RFPAREN;
     if(word == ")")                 return LexemeType::LEX_RPAREN;
 
+    if(Common::isdigits(word))  return LexemeType::LEX_DIGIT;
+    if(Common::is_valid_obj_name(word)) return LexemeType::LEX_OBJ_NAME;
+
     return Lexer_ns::LexemeType::LEX_UNDEF;
 }

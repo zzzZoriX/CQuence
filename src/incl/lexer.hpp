@@ -4,6 +4,7 @@
 #include <string>
 #include <list>
 #include "ehandler.hpp"
+#include "common.hpp"
 
 namespace Lexer_ns {
 
