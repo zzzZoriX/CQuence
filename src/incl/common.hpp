@@ -38,7 +38,7 @@ isdigits(const std::string& s){
 
 static bool
 is_valid_obj_name(const std::string& s){
-    if(s[0] != '_' && std::isalpha(s[0])) return false;
+    if(s[0] != '_' && !std::isalpha(s[0])) return false;
 
     for(const char c : s)
         if(

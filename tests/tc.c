@@ -1,2 +1,1 @@
-#include "./tests/otc.c"
-asdf
+int a();

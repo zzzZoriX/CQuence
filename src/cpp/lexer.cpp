@@ -10,72 +10,103 @@ Lexer::_define_lexeme(
         if(word == "long" && last_tok->second == LexemeType::LEX_LONG){
             last_tok->first += " " + word;
             last_tok->second = LexemeType::LEX_LONG_LONG_TYPE;
+
+            return LexemeType::LEX_CHANGE_LAST_TOK;
         }
         else if(word == "*" && last_tok->second == LexemeType::LEX_DIV){
             last_tok->first += word;
             last_tok->second = LexemeType::LEX_COMMENT_START;
+
+            return LexemeType::LEX_CHANGE_LAST_TOK;
         }
         else if(word == "/" && last_tok->second == LexemeType::LEX_MUL){
             last_tok->first += word;
             last_tok->second = LexemeType::LEX_COMMENT_END;
+
+            return LexemeType::LEX_CHANGE_LAST_TOK;
         }
         else if(word == "=" && last_tok->second == LexemeType::LEX_PLUS){
             last_tok->first += word;
             last_tok->second = LexemeType::LEX_ADD_ASSIGN;
+            
+            return LexemeType::LEX_CHANGE_LAST_TOK;
         }
         else if(word == "=" && last_tok->second == LexemeType::LEX_MINUS){
             last_tok->first += word;
             last_tok->second = LexemeType::LEX_REDUCE_ASSIGN;
+
+            return LexemeType::LEX_CHANGE_LAST_TOK;
         }
         else if(word == "=" && last_tok->second == LexemeType::LEX_MUL){
             last_tok->first += word;
             last_tok->second = LexemeType::LEX_MUL_ASSIGN;
+
+            return LexemeType::LEX_CHANGE_LAST_TOK;
         }
         else if(word == "=" && last_tok->second == LexemeType::LEX_DIV){
             last_tok->first += word;
             last_tok->second = LexemeType::LEX_DIV_ASSIGN;
+
+            return LexemeType::LEX_CHANGE_LAST_TOK;
         }
         else if(word == "=" && last_tok->second == LexemeType::LEX_REM){
             last_tok->first += word;
             last_tok->second = LexemeType::LEX_REM_ASSIGN;
+
+            return LexemeType::LEX_CHANGE_LAST_TOK;
         }
         else if(word == "+" && last_tok->second == LexemeType::LEX_PLUS){
             last_tok->first += word;
             last_tok->second = LexemeType::LEX_INC;
+
+            return LexemeType::LEX_CHANGE_LAST_TOK;
         }
         else if(word == "-" && last_tok->second == LexemeType::LEX_MINUS){
             last_tok->first += word;
             last_tok->second = LexemeType::LEX_DEC;
+
+            return LexemeType::LEX_CHANGE_LAST_TOK;
         }
         else if(word == "&" && last_tok->second == LexemeType::LEX_BIT_AND){
             last_tok->first += word;
             last_tok->second = LexemeType::LEX_AND;
+
+            return LexemeType::LEX_CHANGE_LAST_TOK;
         }
         else if(word == "|" && last_tok->second == LexemeType::LEX_BIT_OR){
             last_tok->first += word;
             last_tok->second = LexemeType::LEX_OR;
+
+            return LexemeType::LEX_CHANGE_LAST_TOK;
         }
         else if(word == "*" && _is_data_lex(last_tok->second)){
             last_tok->first += word;
             last_tok->second = LexemeType::LEX_PTR_TYPE;
+            
+            return LexemeType::LEX_CHANGE_LAST_TOK;
         }
         else if(Common::isdigits(word) && last_tok->second == LexemeType::LEX_MINUS){
             last_tok->first += word;
             last_tok->second = LexemeType::LEX_DIGIT;
+            
+            return LexemeType::LEX_CHANGE_LAST_TOK;
         }
-        else if(word == "_" && last_tok->second == LexemeType::LEX_OBJ_NAME)
+        else if(word == "_" && last_tok->second == LexemeType::LEX_OBJ_NAME){
             last_tok->first += word;
-
+            
+            return LexemeType::LEX_CHANGE_LAST_TOK;
+        }
         else if(
             Common::isdigits(word) && 
             (
                 last_tok->second == LexemeType::LEX_OBJ_NAME ||
                 last_tok->second == LexemeType::LEX_DIGIT
             )
-        )
+        ){
             last_tok->first += word;
-
-        return LexemeType::LEX_CHANGE_LAST_TOK;
+            
+            return LexemeType::LEX_CHANGE_LAST_TOK;
+        }
     }
     
 // process for simple keywords
@@ -133,28 +164,36 @@ Lexer::Tokenize(void) noexcept {
     std::string word;
     char c;
 
-    while((c = ifp.get()) != ifp.eof()){
+    while((c = ifp.get()) > 0){
+        if(c == '\n') continue;
+
         if(Common::isspec(c) || c == ' '){
-            LexemeType lt = _define_lexeme(word, last_token);
+            LexemeType lt;
 
-            // заменить "" на строку кода
-            if(lt == LexemeType::LEX_UNDEF)
-                ErrorHandler::Abort(Error(
-                    "Unknown word",
-                    "",
-                    0,
-                    0,
-                    -1
-                ));
+            if(!word.empty()){
+                lt = _define_lexeme(word, last_token);
+                // заменить "" на строку кода
+                if(lt == LexemeType::LEX_UNDEF)
+                    ErrorHandler::Abort(Error(
+                        "Unknown word",
+                        "",
+                        0,
+                        0,
+                        -1
+                    ));
 
-            if(lt != LexemeType::LEX_CHANGE_LAST_TOK){
-                std::pair<std::string, LexemeType> token(word, lt);
-
-                tokens.push_back(token);
-                last_token = &token;
+                if(lt != LexemeType::LEX_CHANGE_LAST_TOK){
+                    tokens.emplace_back(word, lt);
+                    last_token = &tokens.back();
+                }
             }
 
-            word = {c, '\0'};
+            if(c == ' '){
+                word.clear();
+                continue;
+            }
+
+            word = {c};
             lt = _define_lexeme(word, last_token);
 
             // заменить "" на строку кода
@@ -168,10 +207,8 @@ Lexer::Tokenize(void) noexcept {
                 ));
 
             if(lt != LexemeType::LEX_CHANGE_LAST_TOK){
-                std::pair<std::string, LexemeType> token(word, lt);
-
-                tokens.push_back(token);
-                last_token = &token;
+                tokens.emplace_back(word, lt);
+                last_token = &tokens.back();
             }
 
             word.clear();
@@ -180,7 +217,6 @@ Lexer::Tokenize(void) noexcept {
         word += c;
     }
 
-    tokens.push_back(std::pair<std::string, LexemeType>("", LexemeType::LEX_END));
     last_token = nullptr;
 
     return tokens;

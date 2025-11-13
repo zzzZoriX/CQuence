@@ -2,12 +2,10 @@
 
 #include <fstream>
 #include <string>
-#include <list>
+#include <vector>
+#include <iterator>
 #include "ehandler.hpp"
 #include "common.hpp"
-
-enum class LexemeType;
-using Token = std::list<std::pair<std::string, LexemeType>>;
 
 namespace Lexer_ns {
 
@@ -93,6 +91,8 @@ enum class LexemeType {
     LEX_UNDEF = -1,
     LEX_CHANGE_LAST_TOK = -2
 };
+
+using Token = std::vector<std::pair<std::string, LexemeType>>;
 
 class Lexer {
 private:
