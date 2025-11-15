@@ -1,2 +1,3 @@
-#include "./tests/tc.c"
-int a()asdasd;
+int b(){
+    return 1 + 1;
+}

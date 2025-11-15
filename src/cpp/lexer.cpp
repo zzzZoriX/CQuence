@@ -164,8 +164,19 @@ Lexer::Tokenize(void) noexcept {
     std::string word;
     char c;
 
+    unsigned long long column = -1, row = 1;
+    std::string row_of_code = "";
+
     while((c = ifp.get()) > 0){
-        if(c == '\n') continue;
+        row_of_code += c;
+        ++column;
+        
+        if(c == '\n'){
+            column = 1;
+            ++row;
+            row_of_code.clear();
+            continue;
+        }
 
         if(Common::isspec(c) || c == ' '){
             LexemeType lt;
@@ -176,10 +187,10 @@ Lexer::Tokenize(void) noexcept {
                 if(lt == LexemeType::LEX_UNDEF)
                     ErrorHandler::Abort(Error(
                         "Unknown word",
-                        "",
-                        0,
-                        0,
-                        -1
+                        row_of_code,
+                        row,
+                        column,
+                        1
                     ));
 
                 if(lt != LexemeType::LEX_CHANGE_LAST_TOK){
@@ -200,10 +211,10 @@ Lexer::Tokenize(void) noexcept {
             if(lt == LexemeType::LEX_UNDEF)
                 ErrorHandler::Abort(Error(
                     "Unknown word",
-                    "",
-                    0,
-                    0,
-                    -1
+                    row_of_code,
+                    row,
+                    column,
+                    1
                 ));
 
             if(lt != LexemeType::LEX_CHANGE_LAST_TOK){
