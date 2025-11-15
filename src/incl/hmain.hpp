@@ -12,4 +12,4 @@
 
 
 #define CQ_CCP_DEBUG_CYCLE 0
-#define CQ_TOK_DEBUG_PRINT 1
+#define CQ_TOK_DEBUG_PRINT 0
