@@ -17,6 +17,9 @@ enum class AST_Type {
     AST_MULTI,
     AST_DIV,
     AST_REM,
+    AST_BIT_OR,
+    AST_BIT_AND,
+    AST_BIT_XOR,
     AST_ASSIGN,
     
     AST_INC_PREF,
@@ -90,7 +93,7 @@ typedef struct lc {
 
 class Node {
 public:
-    Node
+    const Node
         * op1,
         * op2,
         * op3
@@ -106,9 +109,9 @@ public:
 
 
 // make binary operation
-    Node(const Node&, const Node&, const std::string&) noexcept;
+    Node(const Node*, const Node*, const std::string&) noexcept;
 // make unary opearation
-    Node(const Node&, const std::string&) noexcept;
+    Node(const Node*, const std::string&) noexcept;
 
 // for literal constants
     Node(const std::string&, const char, const bool);       // char
@@ -127,10 +130,43 @@ public:
     Node(const std::string&, const double, const bool);     // double
 
 // for node of commands(like if-else, cycles and other)
-    Node(const Lexer_ns::LexemeType, const Node&, const Node&, const Node&); // if-else
-    Node(const Lexer_ns::LexemeType, const Node&, const Node&);              // do-while
-    Node(const Node&, const Node&, const Node&);                             // for
-    Node(const Node&, const Node*, const int, const Node&);                  // function
+    Node(const Lexer_ns::LexemeType, const Node*, const Node*);              // do-while / if-else
+    Node(const Node*, const Node*, const Node*);                             // for
+    Node(const Node*, const Node*, const int, const Node*);                  // function
+
+// static functions
+    static AST_Type
+    define_bin_op_type(const std::string& s) noexcept{
+        if(s == "+")        return AST_Type::AST_PLUS;
+        if(s == "-")        return AST_Type::AST_MINUS;
+        if(s == "*")        return AST_Type::AST_MULTI;
+        if(s == "/")        return AST_Type::AST_DIV;
+        if(s == "%")        return AST_Type::AST_REM;
+        if(s == "=")        return AST_Type::AST_ASSIGN;
+        
+        if(s == "|")        return AST_Type::AST_BIT_OR;
+        if(s == "&")        return AST_Type::AST_BIT_AND;
+        if(s == "^")        return AST_Type::AST_BIT_XOR;
+
+        if(s == "<")        return AST_Type::AST_L;
+        if(s == ">")        return AST_Type::AST_G;
+        if(s == "<=")       return AST_Type::AST_LE;
+        if(s == ">=")       return AST_Type::AST_GE;
+        if(s == "==")       return AST_Type::AST_EQ;
+        if(s == "!=")       return AST_Type::AST_NEQ;
+        if(s == "||")       return AST_Type::AST_AND;
+        if(s == "&&")       return AST_Type::AST_OR;
+
+        return AST_Type::AST_UNDEF;
+    }
+
+    static AST_Type
+    define_un_op_type(const std::string& s) noexcept{
+        if(s == "++")       return AST_Type::AST_INC_PREF;
+        if(s == "--")       return AST_Type::AST_DEC_PREF;
+
+        return AST_Type::AST_UNDEF;
+    }
 };
 
 class Parser {
