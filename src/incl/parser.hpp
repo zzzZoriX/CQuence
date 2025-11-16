@@ -3,6 +3,12 @@
 #include "lexer.hpp"
 
 namespace Parser_ns {
+using uc = unsigned char;
+using us = unsigned short;
+using ui = unsigned;
+using ul = unsigned long;
+using ull = unsigned long long;
+
 enum class AST_Type {
     AST_LIT_CNST,
     
@@ -45,46 +51,59 @@ enum class AST_Type {
     AST_UNDEF = -1
 };
 
+typedef struct lc {
+    const std::string dtype;
+    const std::string name;
+
+    union {
+        char char_v;
+        short short_v;
+        int int_v;
+        long long_v;
+        long long ll_v;
+        float flt_v;
+        double dbl_vl;  
+    
+        uc uc_v;
+        us us_v;
+        ui ui_v;
+        ul ul_v;
+        ull ull_v;
+    };
+    lc(void) = default;
+
+    lc(const std::string&, const char, const bool);       // char
+    lc(const std::string&, const short, const bool);      // short
+    lc(const std::string&, const int, const bool);        // int
+    lc(const std::string&, const long, const bool);       // long
+    lc(const std::string&, const long long, const bool);  // long long
+
+    lc(const std::string&, const uc, const bool);         // unsigned char
+    lc(const std::string&, const us, const bool);         // unsigned short
+    lc(const std::string&, const ui, const bool);         // unsigned int
+    lc(const std::string&, const ul, const bool);         // unsigned long
+    lc(const std::string&, const ull, const bool);        // unsigned long long
+    
+    lc(const std::string&, const float, const bool);      // float
+    lc(const std::string&, const double, const bool);     // double
+} LiteralConstant;
+
 class Node {
 public:
-using uc = unsigned char;
-using us = unsigned short;
-using ui = unsigned;
-using ul = unsigned long;
-using ull = unsigned long long;
-
     Node
         * op1,
         * op2,
         * op3
     ;
 
-    union {
-        struct {
-            const std::string dtype;
-            const std::string name;
-            
-            union {
-                char char_v;
-                short short_v;
-                int int_v;
-                long long_v;
-                long long ll_v;
-                float flt_v;
-                double dbl_vl;
-
-                uc uc_v;
-                us us_v;
-                ui ui_v;
-                ul ul_v;
-                ull ull_v;
-            };
-        } LiteralConstant;
-    } value;
+    LiteralConstant lc;
 
     AST_Type type;
 
-    Node() = default;
+    Node(void) noexcept 
+    : op1(nullptr), op2(nullptr), op3(nullptr), 
+      type(AST_Type::AST_UNDEF) {}
+
 
 // make binary operation
     Node(const Node&, const Node&, const std::string&) noexcept;
