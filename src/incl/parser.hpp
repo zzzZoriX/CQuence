@@ -4,11 +4,55 @@
 
 namespace Parser_ns {
 enum class AST_Type {
-
+    AST_LIT_CNST,
+    
+    AST_PLUS,
+    AST_MINUS,
+    AST_MULTI,
+    AST_DIV,
+    AST_REM,
+    AST_ASSIGN,
+    
+    AST_INC_PREF,
+    AST_INC_POST,
+    AST_DEC_PREF,
+    AST_DEC_POST,
+    AST_DEREF,
+    AST_GET_ADDR,
+    
+    AST_EXPR,
+    
+    AST_EQ,
+    AST_NEQ,
+    AST_LE,
+    AST_L,
+    AST_G,
+    AST_GE,
+    AST_AND,
+    AST_OR,
+    
+    AST_IF,
+    AST_ELSE_IF,
+    AST_ELSE,
+    
+    AST_WHILE,
+    AST_FOR,
+    AST_DO_WHILE,
+    
+    AST_RETURN,
+    AST_FUNCTION,
+    
+    AST_UNDEF = -1
 };
 
 class Node {
-private:
+public:
+using uc = unsigned char;
+using us = unsigned short;
+using ui = unsigned;
+using ul = unsigned long;
+using ull = unsigned long long;
+
     Node
         * op1,
         * op2,
@@ -16,17 +60,32 @@ private:
     ;
 
     union {
-// TODO: write a structures for AST_Node values
+        struct {
+            const std::string dtype;
+            const std::string name;
+            
+            union {
+                char char_v;
+                short short_v;
+                int int_v;
+                long long_v;
+                long long ll_v;
+                float flt_v;
+                double dbl_vl;
+
+                uc uc_v;
+                us us_v;
+                ui ui_v;
+                ul ul_v;
+                ull ull_v;
+            };
+        } LiteralConstant;
     } value;
 
     AST_Type type;
 
-public:
-using uc = unsigned char;
-using us = unsigned short;
-using ui = unsigned;
-using ul = unsigned long;
-using ull = unsigned long long;
+    Node() = default;
+
 // make binary operation
     Node(const Node&, const Node&, const std::string&) noexcept;
 // make unary opearation
